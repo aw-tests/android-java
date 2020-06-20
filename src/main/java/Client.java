@@ -1,19 +1,25 @@
 package ;
 
+import android.content.Context;
+
+import com.franmontiel.persistentcookiejar.ClearableCookieJar;
+import com.franmontiel.persistentcookiejar.PersistentCookieJar;
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import okhttp3.Call;
-import okhttp3.CookieJar;
+import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.util.Map.entry;
 
@@ -23,20 +29,25 @@ public class Client {
     private final Map<String, String> config;
     private String endPoint;
     private boolean selfSigned;
-    private CookieJar cookieJar = CookieJar.NO_COOKIES;
+    private  ClearableCookieJar cookieJar ;
 
-    public Client() {
-        this("https://appwrite.io/v1", false, new OkHttpClient());
+
+    public Client(Context ctx) {
+        this("https://appwrite.io/v1", false, new OkHttpClient(),ctx);
     }
 
-    public Client(String endPoint, boolean selfSigned, OkHttpClient http) {
+    public Client(String endPoint, boolean selfSigned, OkHttpClient http, Context ctx) {
         this.endPoint = endPoint;
         this.selfSigned = selfSigned;
         this.headers = new HashMap<>(Map.ofEntries(
                 entry("content-type", "application/json"),
                 entry("x-sdk-version", "appwrite:java:0.1.0")
         ));
+
         this.config = new HashMap<>();
+        cookieJar =
+                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(ctx));
+
         this.http = http.newBuilder()
                 .cookieJar(cookieJar)
                 .build();
