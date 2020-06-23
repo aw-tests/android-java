@@ -2,9 +2,9 @@ package .services;
 
 import androidx.annotation.Nullable;
 
-import io.appwrite.enums.OrderType;
+import .enums.OrderType;
 import okhttp3.Call;
-import io.appwrite.Client;
+import .Client;
 
 import java.util.HashMap;
 import java.util.List;
